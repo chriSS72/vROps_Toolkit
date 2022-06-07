@@ -14,17 +14,21 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser(description='vROps Toolkit.')
 
-    parser.add_argument('-a', '--action', type=str, help='run specified command on ALL nodes')
+    parser.add_argument('-a', '--action', type=str, metavar=('<ACTION>'), help='run specified command on ALL nodes')
     parser.add_argument('-cl', '--check_local', action="store_true", help='brief health check on local node')
     parser.add_argument('-ca', '--check_all', action="store_true", help='brief health check on ALL nodes')
-    parser.add_argument('-t', '--transfer', nargs=2, type=str, help='transfer a specified file to ALL nodes')
+    parser.add_argument('-t', '--transfer', nargs=2, type=str, metavar=('<FILE>', '<DESTINATION PATH>'), help='transfer a specified file to ALL nodes')
     parser.add_argument('-rs', '--remove_ssh', action="store_true", help='delete keys')
     parser.add_argument('-s', '--start', action="store_true", help='create and copy the key')
     parser.add_argument('-n', '--nodes', action="store_true", help='show nodes IDs')
 
     args = parser.parse_args()
 
-    return(args)
+    if (args.action == None and args.check_all == False and args.check_local == False and args.nodes == False and args.remove_ssh == False and args.start == False and args.transfer == None):
+        parser.print_help()
+        quit()
+    else:
+        return(args)
 
 VMENV = os.environ
 
@@ -249,5 +253,5 @@ def get_nodes_ID():
     grepped=subprocess_cmd("cat /storage/db/casa/webapp/hsqldb/casa.db.script | tr ',' '\n' | grep ip_address", 'local').splitlines()
     return [ID.split('"')[3] for ID in grepped]
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
